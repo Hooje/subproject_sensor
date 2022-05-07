@@ -5,12 +5,8 @@ from keras.layers import *
 import keras
 from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
-#Reshape, Conv1D, MaxPooling1D, GlobalAveragePooling1D, Dropout
-#import torch 
-#from torch.nn import Sequential
 
-
-# source : https://kknews.cc/zh-tw/code/z5vg5oq.html
+# change conv1D to lstm 
 
 with open('combined.pickle', 'rb') as f:
     Xy = pickle.load(f)
@@ -35,13 +31,12 @@ num_classes = 2
 
 model_m = Sequential()
 model_m.add(Reshape((TIME_PERIODS, num_sensors), input_shape=(input_shape,)))
-model_m.add(Conv1D(100, 10, activation='relu', input_shape=(TIME_PERIODS, num_sensors)))
-model_m.add(Conv1D(100, 10, activation='relu'))
-model_m.add(MaxPooling1D(3))
-model_m.add(Conv1D(160, 10, activation='relu'))
-model_m.add(Conv1D(160, 10, activation='relu'))
-model_m.add(GlobalAveragePooling1D())
+model_m.add(LSTM(units = 50,return_sequences = True))
 model_m.add(Dropout(0.5))
+model_m.add(MaxPooling1D(3))
+model_m.add(LSTM(units = 50,return_sequences = True))
+model_m.add(Dropout(0.5))
+model_m.add(LSTM(units = 50))
 model_m.add(Dense(num_classes, activation='softmax'))
 
 print(model_m.summary())
